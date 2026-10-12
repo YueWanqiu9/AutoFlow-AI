@@ -1,0 +1,40 @@
+# Python 与虚拟环境
+__pycache__/
+*.py[cod]
+*.pyc
+venv/
+.venv/
+
+# 本地密钥与 Streamlit 配置
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# SQLite 与运行数据
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+data/*
+!data/.gitkeep
+
+# AI 调用日志包含客户原文与解析结果
+logs/*
+!logs/.gitkeep
+
+# 本地原文备份，不随公开项目上传
+docs/original_app.py.txt
+
+# 构建、编辑器和测试临时文件
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+.DS_Store
+Thumbs.db
