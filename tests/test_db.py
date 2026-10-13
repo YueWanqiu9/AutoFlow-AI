@@ -13,6 +13,11 @@ from database import db
 from modules.tickets import create_ticket
 
 
+EMPTY_PRIORITY = dict.fromkeys(("priority_suggested", "priority_final", "priority_reason", "priority_source"))
+EMPTY_ADVICE = dict.fromkeys(("advice_json", "advice_source", "advice_decision", "advice_final", "advice_generated_at"))
+NEW_ADVICE = {**EMPTY_ADVICE, "advice_decision": "unreviewed"}
+
+
 class DatabaseTests(unittest.TestCase):
     def setUp(self):
         directory = TemporaryDirectory()
@@ -51,9 +56,10 @@ class DatabaseTests(unittest.TestCase):
             [column[1] for column in columns],
             ["id", "customer_input", "service_type", "appointment_time", "address",
              "customer_name", "phone", "urgency", "status", "created_time",
-             "confidence_score", "review_required", "token_used", "response_time"],
+             "confidence_score", "review_required", "token_used", "response_time",
+             "priority_suggested", "priority_final", "priority_reason", "priority_source", *EMPTY_ADVICE],
         )
-        self.assertEqual([column[2] for column in columns], ["TEXT"] * 12 + ["INTEGER", "REAL"])
+        self.assertEqual([column[2] for column in columns], ["TEXT"] * 12 + ["INTEGER", "REAL"] + ["TEXT"] * 9)
         self.assertEqual(columns[0][5], 1)
         self.assertEqual(columns[10][3:5], (1, "'{}'"))
         self.assertEqual(columns[11][3:5], (1, "'false'"))
@@ -94,12 +100,14 @@ class DatabaseTests(unittest.TestCase):
         expected_legacy = {
             **legacy_ticket, "confidence_score": "{}", "review_required": False,
             "token_used": 0, "response_time": None,
+            **EMPTY_PRIORITY, **EMPTY_ADVICE,
         }
         self.assertEqual(db.get_ticket(legacy_ticket["id"]), expected_legacy)
         new_ticket = {
             **self.base_ticket, "id": "new-ticket", "status": "人工审核",
             "confidence_score": self.ai_result, "review_required": True,
             "token_used": 37, "response_time": 0.12,
+            **EMPTY_PRIORITY, **NEW_ADVICE,
         }
         db.save_ticket(new_ticket)
         db.init_db()
@@ -107,7 +115,7 @@ class DatabaseTests(unittest.TestCase):
         self.assertEqual(db.get_ticket(legacy_ticket["id"]), expected_legacy)
         with closing(sqlite3.connect(self.db_path)) as connection:
             columns = connection.execute("PRAGMA table_info(tickets)").fetchall()
-        self.assertEqual(len(columns), 14)
+        self.assertEqual(len(columns), 23)
 
     def test_twelve_column_migration_preserves_review_state_and_original_ai_json(self):
         self.db_path.parent.mkdir(parents=True)
@@ -156,15 +164,17 @@ class DatabaseTests(unittest.TestCase):
                     **self.base_ticket, "id": ticket_id, "status": status,
                     "confidence_score": self.ai_result, "review_required": review,
                     "token_used": 0, "response_time": None,
+                    **EMPTY_PRIORITY, **EMPTY_ADVICE,
                 }
                 self.assertEqual(db.get_ticket(ticket_id), expected)
         with closing(sqlite3.connect(self.db_path)) as connection:
-            self.assertEqual(len(connection.execute("PRAGMA table_info(tickets)").fetchall()), 14)
+            self.assertEqual(len(connection.execute("PRAGMA table_info(tickets)").fetchall()), 23)
             self.assertIsNone(connection.execute("SELECT AVG(response_time) FROM tickets").fetchone()[0])
 
         measured_ticket = {
             **self.base_ticket, "id": "new-measurement", "confidence_score": "{}",
             "review_required": False, "token_used": 120, "response_time": 1.25,
+            **EMPTY_PRIORITY, **NEW_ADVICE,
         }
         db.save_ticket(measured_ticket)
         db.init_db()
@@ -179,6 +189,7 @@ class DatabaseTests(unittest.TestCase):
                     **self.base_ticket, "id": f"measurement-{response_time}",
                     "confidence_score": self.ai_result, "review_required": False,
                     "token_used": token_used, "response_time": response_time,
+                    **EMPTY_PRIORITY, **NEW_ADVICE,
                 }
                 db.save_ticket(ticket)
                 self.assertEqual(db.get_ticket(ticket["id"]), ticket)
@@ -203,6 +214,7 @@ class DatabaseTests(unittest.TestCase):
         expected = {
             **self.base_ticket, "confidence_score": "{}", "review_required": False,
             "token_used": 0, "response_time": None,
+            **EMPTY_PRIORITY, **NEW_ADVICE,
         }
         self.assertEqual(db.get_all_tickets(), [expected])
         self.assertEqual(db.get_ticket(self.base_ticket["id"]), expected)
@@ -215,6 +227,7 @@ class DatabaseTests(unittest.TestCase):
                     **self.base_ticket, "id": f"review-{review_required}",
                     "confidence_score": self.ai_result, "review_required": review_required,
                     "token_used": 0, "response_time": None,
+                    **EMPTY_PRIORITY, **NEW_ADVICE,
                 }
                 db.save_ticket(ticket)
                 saved = db.get_ticket(ticket["id"])
@@ -233,6 +246,7 @@ class DatabaseTests(unittest.TestCase):
             **self.base_ticket, "status": "人工审核",
             "confidence_score": self.ai_result, "review_required": True,
             "token_used": 0, "response_time": None,
+            **EMPTY_PRIORITY, **NEW_ADVICE,
         }
         db.save_ticket(ticket)
         with self.assertRaisesRegex(ValueError, "该工单需要先完成人工审核。"):
@@ -254,6 +268,7 @@ class DatabaseTests(unittest.TestCase):
             **self.base_ticket, "status": "人工审核",
             "confidence_score": self.ai_result, "review_required": True,
             "token_used": 250, "response_time": 1.125,
+            **EMPTY_PRIORITY, **NEW_ADVICE,
         }
         db.save_ticket(ticket)
         corrections = {

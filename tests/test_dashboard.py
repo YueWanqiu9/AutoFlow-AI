@@ -69,6 +69,16 @@ class DashboardTests(unittest.TestCase):
             "status_counts": {}, "service_type_counts": {},
             "ai_call_count": 0, "avg_response_time": None, "ai_metrics_error": None,
             "ai_success_count": 0, "ai_success_rate": None, "review_required_count": 0,
+            "priority_counts": {"高": 0, "普通": 0, "低": 0, "待分级": 0}, "high_priority_open_count": 0,
+            "advice_decision_counts": {"未评审": 0, "已采纳": 0, "已修改": 0, "已拒绝": 0},
+            "advice_generated_count": 0,
+            "incomplete_ticket_count": 0, "completed_conversation_count": 0, "avg_completed_fields": None,
+            "staff_total_count": 0, "staff_available_count": 0, "staff_busy_count": 0, "staff_demo_count": 0,
+            "matchable_ticket_count": 0, "matching_metrics_error": None,
+            "dispatch_total_count": 0, "dispatch_confirmed_count": 0,
+            "dispatch_cancelled_count": 0, "dispatch_demo_count": 0,
+            "service_completed_count": 0, "service_exception_count": 0,
+            "avg_acceptance_seconds": None, "avg_service_seconds": None,
         })
         self.parser.assert_not_called()
 

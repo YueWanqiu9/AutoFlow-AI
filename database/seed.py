@@ -6,6 +6,7 @@ from random import Random
 from uuid import uuid4
 
 from database import db
+from modules import events
 from modules.automation import REPORT_TIMEZONE
 from modules.tickets import TICKET_FIELDS
 
@@ -73,4 +74,9 @@ def seed_demo_data(count: int = 120) -> int:
             "INSERT INTO tickets (" + ", ".join(columns) + ") VALUES (" + ", ".join("?" for _ in columns) + ")",
             rows,
         )
+        for ticket in tickets:
+            events.create_event(
+                connection, ticket["id"], "demo_imported", "demo",
+                {}, ticket, reason="加载虚构演示工单；记录本次导入时间，不补造历史操作。",
+            )
     return len(tickets)

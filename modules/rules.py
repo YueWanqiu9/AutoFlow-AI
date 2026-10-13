@@ -4,6 +4,13 @@ import math
 
 CRITICAL_FIELDS = ("service_type", "address", "appointment_time", "phone")
 CONFIDENCE_THRESHOLD = 0.7
+COMPLETION_FIELDS = ("customer_name", "phone", "address", "service_type", "appointment_time")
+
+
+def missing_ticket_fields(ticket: dict) -> list[str]:
+    """完整度只反映五项是否有值，不代替置信度审核或资料真实性核验。"""
+    return [field for field in COMPLETION_FIELDS
+            if not isinstance(ticket.get(field), str) or not ticket[field].strip()]
 
 
 def get_confidence_score(parsed_result: dict) -> float:

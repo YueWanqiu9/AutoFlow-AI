@@ -205,6 +205,7 @@ def _record_result(text: str, result: ParsedRequest) -> None:
     try:
         entry = {
             "timestamp": _timestamp(),
+            "task_type": "parse",
             "input": text,
             "output": dict(result),
             "status": result.call_status,

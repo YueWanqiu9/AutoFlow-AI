@@ -44,12 +44,13 @@ def append_ai_call(entry: dict) -> None:
                 temporary_path.unlink(missing_ok=True)
 
 
-def get_ai_call_stats() -> dict:
-    """统计真实 SDK 尝试、解析成功率和平均秒数，演示与配置记录不计入。"""
+def get_ai_call_stats(task_type: str = "parse") -> dict:
+    """按任务统计真实调用；旧日志按解析处理，优先级不混入解析成功率。"""
     calls = [
         call for call in read_ai_calls()
         if call.get("status") not in ("demo", "configuration_error")
         and call.get("api_called", True) is True
+        and call.get("task_type", "parse") == task_type
     ]
     times = []
     for call in calls:

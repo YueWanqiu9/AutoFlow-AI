@@ -348,7 +348,7 @@ class AIParserTests(unittest.TestCase):
             set(entry),
             {
                 "timestamp", "input", "output", "status", "error", "token_used",
-                "response_time", "api_called", "request_time", "response_timestamp", "model",
+                "response_time", "api_called", "request_time", "response_timestamp", "model", "task_type",
             },
         )
         self.assertEqual(datetime.fromisoformat(entry["timestamp"]).utcoffset(), timedelta(hours=8))
