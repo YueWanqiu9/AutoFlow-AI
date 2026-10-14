@@ -6,7 +6,8 @@ st.set_page_config(page_title="项目介绍 · AutoFlow AI", page_icon="ℹ️",
 st.title("项目介绍")
 st.markdown("### AutoFlow AI · 智能服务工单与运营自动化系统")
 st.caption("项目负责人：刘宜琛 · 个人AI应用项目 · 方向：AI应用落地 / 运营数字化")
-st.markdown('<a href="/" target="_self">返回演示首页，体验业务流程 Demo</a>', unsafe_allow_html=True)
+if st.button("返回演示首页，体验业务流程 Demo"):
+    st.switch_page("app.py")
 
 with st.container(border=True):
     st.subheader("业务背景")
