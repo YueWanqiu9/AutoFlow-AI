@@ -75,10 +75,8 @@ def _show_step(step):
 
 def show_full_demo():
     st.subheader("一键 Demo · 五分钟理解业务闭环")
-    st.write(DEMO_REQUEST)
-    st.caption("虚构案例 · 独立演示空间 · 全部数据标记为 demo · 无需 API Key。重复运行复用同一案例。")
-    st.info("一键演示会模拟客户回复与运营确认；真实工作台仍需运营逐项核对、确认派单和登记服务。")
-    if st.button("一键运行完整演示", key="run_full_demo", type="primary"):
+    st.caption("首次访问从这里开始：无需配置、无需 API Key，点击下方按钮体验。")
+    if st.button("体验完整业务流程", key="run_full_demo", type="primary"):
         try:
             with st.spinner("正在执行需求到服务完成的十步演示……"):
                 result = run_demo_flow()
@@ -86,11 +84,15 @@ def show_full_demo():
             st.session_state["full_demo_step"] = 1
         except DemoFlowError as error:
             st.error(str(error))
+    st.write(DEMO_REQUEST)
+    st.caption("虚构案例 · 独立演示空间 · 全部数据标记为 demo。重复运行复用同一案例。")
+    st.info("本 Demo 模拟客户回复与运营确认，执行后可回看结果；工作台仍需运营逐项核对、确认派单和登记服务。")
     result = st.session_state.get("full_demo_result")
     if result is None:
         st.write("**讲解路线**：需求与补全 → 规则与人工决策 → 资源匹配 → 派单与履约 → 数据与追踪")
         return
     st.success("完整演示已执行 10 / 10 步。可拖动下方导航回看各步骤。")
+    st.caption("拖动“选择讲解步骤”回看需求、补全、审核、建议、人员匹配和服务结果；下方步骤卡片仅显示位置，不是切换按钮。")
     current = st.select_slider("选择讲解步骤", options=list(range(1, 11)), key="full_demo_step",
                                format_func=lambda value: f"{value}. {result['steps'][value - 1]['title']}")
     st.progress(current / 10, text=f"当前讲解步骤：{current} / 10（执行已完成）")

@@ -5,6 +5,8 @@ import streamlit as st
 st.set_page_config(page_title="项目介绍 · AutoFlow AI", page_icon="ℹ️", layout="wide")
 st.title("项目介绍")
 st.markdown("### AutoFlow AI · 智能服务工单与运营自动化系统")
+st.caption("项目负责人：刘宜琛 · 个人AI应用项目 · 方向：AI应用落地 / 运营数字化")
+st.markdown('<a href="/" target="_self">返回演示首页，体验业务流程 Demo</a>', unsafe_allow_html=True)
 
 with st.container(border=True):
     st.subheader("业务背景")
@@ -42,6 +44,6 @@ for principle in ("AI 辅助决策，不替代业务判断。", "规则保证业
     st.write(f"• {principle}")
 
 st.subheader("五分钟面试演示")
-st.write("回到演示首页，点击“一键运行完整演示”。从需求解析、两轮信息补全，到运营确认、护理员推荐、派单与服务完成，按十步导航讲解每一个决策。")
+st.write("回到演示首页，点击“体验完整业务流程”。从需求解析、两轮信息补全，到运营确认、护理员推荐、派单与服务完成，拖动步骤导航回看每一个决策。")
 st.write("完整演示使用独立数据库，重复运行复用同一案例；全部资料为 demo，客户回复、人工确认和服务执行均为模拟操作。")
 st.caption("Demo 使用预置解析和规则模板，不调用真实 AI；模型自评分不代表准确率，演示耗时不代表真实履约效率。真实业务仍需运营确认。")

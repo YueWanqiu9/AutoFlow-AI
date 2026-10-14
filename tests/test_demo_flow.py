@@ -48,7 +48,7 @@ class DemoFlowTests(unittest.TestCase):
         return app
 
     def click_demo(self, app):
-        next(button for button in app.button if button.label == "一键运行完整演示").click().run(timeout=30)
+        next(button for button in app.button if button.label == "体验完整业务流程").click().run(timeout=30)
         self.assertFalse(app.exception)
 
     def test_complete_case_uses_one_ticket_and_finishes_service(self):
@@ -191,7 +191,7 @@ class DemoFlowTests(unittest.TestCase):
         self.assertEqual([tab.label for tab in app.tabs], ["演示首页", "运营工作台"])
         home = app.tabs[0]
         headings = [item.value for item in home.subheader]
-        self.assertEqual(headings, ["核心模块", "业务流程", "一键 Demo · 五分钟理解业务闭环", "运营 Dashboard", "技术架构"])
+        self.assertEqual(headings, ["一键 Demo · 五分钟理解业务闭环", "核心模块", "业务流程", "运营 Dashboard", "技术架构"])
         self.assertFalse(demo.DEMO_DB_PATH.exists())
         self.assertEqual(db.get_all_tickets(), [])
         self.parser_sdk.assert_not_called()

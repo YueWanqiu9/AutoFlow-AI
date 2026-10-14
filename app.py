@@ -565,12 +565,13 @@ def show_staff_matching(ticket):
 st.set_page_config(page_title="AutoFlow AI", page_icon="🛠️", layout="wide")
 st.title("AutoFlow AI")
 st.markdown("### 智能服务工单与运营自动化系统")
+st.caption("项目负责人：刘宜琛 · 个人AI应用项目 · 方向：AI应用落地 / 运营数字化")
 st.caption("将非结构化客户需求，通过AI解析、信息补全、资源匹配和运营决策，转化为可执行服务流程。")
 st.warning(
-    "公开演示环境：仅限使用虚构示例。禁止输入真实姓名、电话号码、服务地址、身份证号、API Key 等敏感信息。"
-    "工作台数据由访问者共享，可能被查看、修改或重置；请优先使用「一键运行完整演示」。"
+    "公开演示环境：仅限模拟资料。禁止输入真实姓名、电话号码、服务地址、身份证号、API Key 等敏感信息。"
+    "工作台由访问者共享，请优先体验首页的业务流程 Demo。"
 )
-st.sidebar.info("从左侧“项目介绍”查看业务背景、解决方案与技术架构。")
+st.sidebar.info("首次访问：在首页体验业务流程 Demo。上方可切换“演示首页／运营工作台”；左侧“项目介绍”说明业务背景，点击“app”可返回首页。")
 
 try:
     init_db()
@@ -580,6 +581,11 @@ except (sqlite3.Error, OSError):
 
 home_tab, workbench_tab = st.tabs(["演示首页", "运营工作台"])
 with home_tab:
+    show_full_demo()
+    st.caption(
+        "当前版本使用模拟业务数据进行 Demo 展示。由于采用轻量化部署方案，云端环境重启后数据可能重新初始化；"
+        "可再次运行 Demo 生成案例。正式业务版本可接入持久化数据库。"
+    )
     st.subheader("核心模块")
     modules = (
         ("AI需求解析", "提取服务、时间、地址等结构化字段。"),
@@ -596,11 +602,11 @@ with home_tab:
     st.subheader("业务流程")
     st.markdown("**客户需求 → AI解析 → 信息补全 → 运营确认 → 人员匹配 → 服务执行 → 数据分析**")
     st.caption("先理解客户要什么，再确认如何执行，最后追踪服务是否完成。")
-    show_full_demo()
     home_dashboard = st.container()
     show_technology_overview()
 
 with workbench_tab:
+    st.caption("手动练习路线：需求解析 → 信息补全 → 审核 → 优先级 → 处理建议 → 人员匹配 → 派单 → 服务跟踪。只想快速了解项目，请切换“演示首页”。")
     st.subheader("当前系统状态")
     st.info("当前阶段：已支持需求解析、信息补全、运营审核、人员推荐、确认派单与服务跟踪。")
     ai_status = get_ai_status()
@@ -729,7 +735,9 @@ with workbench_tab:
                 else:
                     st.info("此历史工单没有保存 AI 可信度。")
 
+            show_conversation(selected_ticket)
             if selected_ticket["review_required"]:
+                st.subheader("人工审核")
                 st.warning("此工单需人工审核，请核对或修正字段后提交。")
                 review_version = hashlib.sha256(json.dumps([
                     selected_ticket[field] for field in ("service_type", "appointment_time", "address", "customer_name", "phone", "urgency")
@@ -800,7 +808,6 @@ with workbench_tab:
                                 st.warning("未找到所选工单，请刷新页面后重试。")
             show_priority_management(selected_ticket)
             show_advice_management(selected_ticket)
-            show_conversation(selected_ticket)
             show_staff_matching(selected_ticket)
             show_ticket_history(selected_id)
         else:
@@ -818,7 +825,10 @@ with workbench_tab:
                     )
                     st.rerun()
 
-    st.caption("工单已保存在本地数据库，刷新或重启应用后仍可查看历史记录。")
+    st.caption(
+        "当前版本使用模拟业务数据进行 Demo 展示，记录保存在当前环境的 SQLite 中。"
+        "由于采用轻量化部署方案，云端环境重启后数据可能重新初始化；正式业务版本可接入持久化数据库。"
+    )
 
     st.subheader("服务人员管理")
     st.caption("查看服务人员资源池，按状态筛选。可用状态为人工维护的信息，技能与区域用于规则推荐；具体服务能力和预约档期仍需核实。")
