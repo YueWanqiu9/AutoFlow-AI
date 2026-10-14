@@ -566,6 +566,10 @@ st.set_page_config(page_title="AutoFlow AI", page_icon="🛠️", layout="wide")
 st.title("AutoFlow AI")
 st.markdown("### 智能服务工单与运营自动化系统")
 st.caption("将非结构化客户需求，通过AI解析、信息补全、资源匹配和运营决策，转化为可执行服务流程。")
+st.warning(
+    "公开演示环境：仅限使用虚构示例。禁止输入真实姓名、电话号码、服务地址、身份证号、API Key 等敏感信息。"
+    "工作台数据由访问者共享，可能被查看、修改或重置；请优先使用「一键运行完整演示」。"
+)
 st.sidebar.info("从左侧“项目介绍”查看业务背景、解决方案与技术架构。")
 
 try:

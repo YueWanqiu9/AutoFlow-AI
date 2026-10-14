@@ -130,7 +130,7 @@ logs/                      调用日志，不提交 Git
 
 项目包含完整模拟业务闭环。启动后进入「演示首页」，点击 **「一键运行完整演示」**。
 
-展示材料：[六张 Demo 截图方案](docs/screenshots/README.md)（真实截图待补充） · [V2.0 Release 说明草稿](docs/RELEASE_v2.0.0.md)（尚未发布）。
+展示材料：[六张 Demo 截图方案](docs/screenshots/README.md)（真实截图待补充） · [V2.0 Release 说明](docs/RELEASE_v2.0.0.md) · [已发布的 GitHub Release](https://github.com/YueWanqiu9/AutoFlow-AI/releases/tag/v2.0.0)。
 
 > 我母亲82岁，行动不便，希望明天下午两点安排护理员上门照护，地址红塔区山水佳园。
 
@@ -151,10 +151,11 @@ logs/                      调用日志，不提交 Git
 - 解析使用预置模拟结果，补全、建议与推荐解释使用现有规则路径；客户回复、运营确认和服务执行均为模拟操作。完整演示不调用付费 AI，也不代表真实 AI 联调结果。
 - 十步执行完成后，导航仅用于回看。重复点击和刷新不重复创建案例；已有完整演示库时重启后仍可复用。
 - 原有工作台「一键演示」和样例加载属于写入工作台库的手动练习，也有演示提示；不要与完整隔离演示入口混淆。
+- 公开工作台没有用户隔离，访问者可以查看和修改共享数据。仅限使用虚构示例，禁止输入真实姓名、电话、地址、身份证号或 API Key。页面提示不提供敏感信息自动识别、过滤或访问控制。
 
 ## 测试
 
-**471 tests passed** — Phase 5B-0 已验证的本地测试结果，环境为 Python 3.12.14。本次 README 展示调整未修改代码或测试，该数字不表示云端运行已验收。
+**471 tests passed** — Phase 5C-1 于 2026-10-14 重新运行全量测试通过，耗时 74.351 秒，环境为 Python 3.12.14；该结果不表示云端运行已验收。
 
 覆盖字段解析与降级、人工确认、事件追踪、数据库迁移、事务回滚、人员匹配、服务状态机、页面操作，以及 Demo 隔离、重复运行和并发创建。
 
@@ -169,7 +170,7 @@ logs/                      调用日志，不提交 Git
 ## 项目限制
 
 - **个人作品 Demo，非生产环境**：使用模拟业务数据，尚未进行真实业务规模与实际履约效果验证。
-- **SQLite 用于演示**：需要可写目录及持久存储策略；本地文件丢失时演示可以重新生成，真实数据不能依靠这种方式恢复。
+- **SQLite 仅用于演示，不作为本项目的生产存储**：需要可写目录；云端本地文件不保证持久保留。文件丢失后可以重新生成模拟案例，不能恢复此前手动录入的数据。
 - **未设计多租户权限**：无登录和访问控制，工作台由访问者共享；公开 Demo 不应放入真实客户信息或付费 API Key。
 - **面向单实例**：AI 日志采用进程内锁，不支持多个进程共同写入；未提供复杂调度、实时排班、GPS 或支付。
 - **模拟不等于实测**：预设置信度不是准确率，演示执行时间不是实际服务耗时，登记可用不保证人员档期可用。
@@ -214,5 +215,33 @@ python3.12 -m venv .venv
 Streamlit Community Cloud 的入口与 Python 版本配置参考[官方部署说明](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy)。平台不保证本地文件持久化，详情见[官方 SQLite 存储说明](https://docs.streamlit.io/develop/concepts/connections/connecting-to-data)。真实业务的访问控制、备份与可靠存储需另行规划。
 
 </details>
+
+## Streamlit Cloud 部署
+
+面试展示使用模拟模式，保持 `config.py` 中 `DEMO_MODE=True`，无需配置 API Key。这个开关是代码常量，仅在云端 Secrets 中添加 `DEMO_MODE` 不会改变模式。
+
+1. 将审核通过的版本同步到 GitHub。Cloud 读取远程仓库，本地尚未提交或推送的改动不会被部署。
+2. 登录 [Streamlit Community Cloud](https://share.streamlit.io/)，选择 **Create app**，填写以下参数。
+3. 在 **Advanced settings** 中选择 Python 3.12，模拟演示的 Secrets 留空，然后开始部署并查看构建日志。
+
+| 配置项 | 值 |
+| --- | --- |
+| Repository | `YueWanqiu9/AutoFlow-AI` |
+| Branch | `main` |
+| Main file path | `app.py` |
+| Python | `3.12` |
+| Dependencies | 根目录的 `requirements.txt` |
+| Secrets | 模拟模式留空，不上传本地 `.env` |
+
+配置方式见 [Streamlit 官方部署说明](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy)。后续推送到部署分支的改动会触发应用更新，应先完成本地审核和测试。
+
+**数据与运行边界：**
+
+- 应用自动初始化 SQLite，无需上传本地数据库。`data/` 和 `logs/` 必须可写；完整 Demo 首次生成需要启动 Python 子进程，当前超时为 60 秒。
+- SQLite 仅保存演示数据，不作为生产存储。Community Cloud 不保证本地文件持久化；数据丢失后，重新点击完整演示按钮可生成模拟案例，手动录入的工作台记录不会恢复。参见 [官方本地存储说明](https://docs.streamlit.io/develop/concepts/connections/connecting-to-data)。
+- 完整 Demo 使用独立数据库和 `is_demo=1` 标记；工作台仍是所有访客共享的操作区。公开部署禁止输入真实个人信息，也不应配置付费 API Key。
+- 不上传 `.env`、`.streamlit/secrets.toml`、数据库、日志或虚拟环境。项目仍为个人作品 Demo，未提供生产访问控制、备份和多租户隔离。
+
+**部署后验收：** 确认首页提示可见、工作台显示模拟模式、完整十步 Demo 能执行并回看、重复点击不新增同一完整案例、Dashboard 和项目介绍页正常。检查首次生成及应用重启后的表现；本地测试通过不能替代云端验收。
 
 项目采用 [MIT License](LICENSE)。

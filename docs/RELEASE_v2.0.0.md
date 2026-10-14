@@ -2,11 +2,11 @@
 
 AI驱动的服务运营自动化工作台，将客户需求整理、人工决策、派单执行和服务跟踪连接成可追溯的业务闭环。
 
-本文件是待审核的 Release 说明草稿，尚未创建 GitHub Release。
+本版本已正式发布：[AutoFlow AI V2.0 Release](https://github.com/YueWanqiu9/AutoFlow-AI/releases/tag/v2.0.0)，不是草稿或预发布版本。
 
 - 对应标签：`v2.0.0`
 - 对应提交：`3e6a7156fc7871a3909390f9b7f1175fa5621c72`
-- 标签对应已经完成的 MVP 功能。后续 README 优化及本展示文档尚未提交，不属于当前标签中的文件；本阶段不移动或新建标签。
+- 标签固定对应 MVP 功能提交；后续展示文档已通过 `54f336278ce51d548c691c7f839949f046760e40` 提交到 `main`。标签源码快照与后续文档更新应分别查看，`v2.0.0` 标签保持不变。
 
 ## Features
 
@@ -38,7 +38,7 @@ AI驱动的服务运营自动化工作台，将客户需求整理、人工决策
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-本阶段仅准备展示文档，没有修改或重新运行测试。以上结果不代表真实 AI 联调、Linux 云端运行或生产环境已验收。
+以上是发布版本的本地测试结果，不代表真实 AI 联调、Linux 云端运行或生产环境已验收。后续部署准备与验收说明见项目 README。
 
 ## Project Scope
 
